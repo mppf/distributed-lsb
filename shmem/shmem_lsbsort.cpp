@@ -17,7 +17,7 @@
 #define RADIX 16
 #define N_DIGITS (64/RADIX)
 #define N_BUCKETS (1 << RADIX)
-#define COUNTS_SIZE (N_BUCKETS)
+#define COUNTS_SIZE ((int64_t) N_BUCKETS)
 #define MASK (N_BUCKETS - 1)
 using counts_array_t = std::array<int64_t, COUNTS_SIZE>;
 

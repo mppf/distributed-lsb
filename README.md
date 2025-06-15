@@ -17,7 +17,7 @@ implementation.
 |             | in million elements sorted / s |             |
 | chapel      | 6524                  | 138                  |
 | mpi         | 830                   | 412                  |
-| shmem       | 1874                  | 295                  |
+| shmem       | 1883                  | 295                  |
 
 PRs contributing improved versions or implementations in other
 distributed-memory parallel programming frameworks are welcome!

@@ -41,30 +41,30 @@ Performance was measured on an HPE Cray Supercomputing EX using 64 nodes
 Compile command:
 
 ```
-CC -O3 shmem_lsbsort.cpp -o shmem_lsbsort -I pcg-cpp/include/
+CC -O3 -DNDEBUG shmem_lsbsort.cpp -o shmem_lsbsort -I pcg-cpp/include/
 ```
 
 Run command:
 
 ```
-srun --nodes 64 --ntasks-per-node=128 ./shmem_lsbsort --n 68719476736
+srun --nodes 64 --ntasks-per-node=128 --hint=nomultithread ./shmem_lsbsort --n 68719476736
 ```
 
 Output:
 
 ```
-Total number of MPI ranks: 8192
+Total number of shmem PEs: 8192
 Problem size: 68719476736
 Generating random values
-Generated random values in 0.239003 s
+Generated random values in 0.220942 s
 Sorting
-Sorted 68719476736 values in 82.7494
-That's 830.453 M elements sorted / s
+Sorted 68719476736 values in 36.476
+That's 1883.97 M elements sorted / s
 ```
 
 Other details:
- * used `PrgEnv-gnu` and `gcc-native/12.3`
- * used `cray-mpich/8.1.28`
+ * used `PrgEnv-gnu` and `gcc-native/14.2`
+ * used `cray-openshmemx/11.7.4`
  * used these additional environment variables
    ```
    export SLURM_UNBUFFEREDIO=1
