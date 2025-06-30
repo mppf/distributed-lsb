@@ -8,7 +8,7 @@ module ArkoudaRadixSortStandalone
 
     /*
     Bit width of digits for the LSD radix sort and related ops
-     */ 
+     */
     config param bitsPerDigit = 16;
     private param numBuckets = 1 << bitsPerDigit;
     private param maskDigit = numBuckets-1;
@@ -19,7 +19,10 @@ module ArkoudaRadixSortStandalone
     config const numTasks = here.maxTaskPar;
     const Tasks = {0..#numTasks};
 
-    
+    /* BEGIN_IGNORE_FOR_LINE_COUNT (verification code) */
+    config const verify = n < 100_000;
+    /* END_IGNORE_FOR_LINE_COUNT */
+
     use BlockDist;
     use CopyAggregation;
     use Random;
@@ -109,11 +112,11 @@ module ArkoudaRadixSortStandalone
                     }//coforall task
                 }//on loc
             }//coforall loc
-            
+
             // scan globalCounts to get bucket ends on each locale/task
             var globalStarts = + scan globalCounts;
             globalStarts -= globalCounts;
-            
+
             // calc new positions and permute
             coforall loc in Locales with (ref a) {
                 on loc {
@@ -150,7 +153,7 @@ module ArkoudaRadixSortStandalone
                             }
                             aggregator.flush();
                         }
-                    }//coforall task 
+                    }//coforall task
                 }//on loc
             }//coforall loc
 
@@ -163,6 +166,8 @@ module ArkoudaRadixSortStandalone
     }//proc radixSortLSDCore
 
     proc main() {
+      writeln("Running on ", numLocales, " locales with ", numTasks, " tasks");
+
       var A = blockDist.createArray(0..<n, (uint(64), uint(64)));
 
       writeln("Generating ", n, " ", A.eltType:string, " elements");
@@ -183,7 +188,24 @@ module ArkoudaRadixSortStandalone
 
       t.stop();
 
-      writeln("Sorted ", n, " elements in ", t.elapsed(), " s"); 
+      writeln("Sorted ", n, " elements in ", t.elapsed(), " s");
       writeln("That's ", n/t.elapsed()/1000.0/1000.0, " M elements sorted / s");
+
+      /* BEGIN_IGNORE_FOR_LINE_COUNT (verification code) */
+      {
+        writeln("Verifying with 1-locale sort");
+        var B:[0..<n] (uint(64), uint(64));
+        var rs2 = new randomStream(uint, seed=1);
+        forall (elt, i, rnd) in zip(B, B.domain, rs2.next(B.domain)) {
+          elt[0] = rnd;
+          elt[1] = i;
+        }
+        Sort.sort(B);
+        forall (a, b) in zip (A, B) {
+          assert(a == b);
+        }
+        writeln("Verification OK");
+      }
+      /* END_IGNORE_FOR_LINE_COUNT */
     }
 }
