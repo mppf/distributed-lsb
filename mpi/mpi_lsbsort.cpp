@@ -30,6 +30,7 @@ struct SortElement {
   uint64_t key = 0; // to sort by
   uint64_t val = 0; // carried along
 };
+/* BEGIN_IGNORE_FOR_LINE_COUNT (printing code) */
 std::ostream& printhex(std::ostream& os, uint64_t key) {
   std::ios oldState(nullptr);
   oldState.copyfmt(os);
@@ -43,6 +44,7 @@ std::ostream& operator<<(std::ostream& os, const SortElement& x) {
   os << "," << x.val << ")";
   return os;
 }
+/* END_IGNORE_FOR_LINE_COUNT */
 bool operator==(const SortElement& x, const SortElement& y) {
   return x.key == y.key && x.val == y.val;
 }
@@ -54,10 +56,12 @@ struct CountBufElt {
   int32_t rank = 0;
   int64_t count = 0;
 };
+/* BEGIN_IGNORE_FOR_LINE_COUNT (printing code) */
 std::ostream& operator<<(std::ostream& os, const CountBufElt& x) {
   os << "(" << x.digit << "," << x.rank << "," << x.count << ")";
   return os;
 }
+/* END_IGNORE_FOR_LINE_COUNT */
 static MPI_Datatype gCountBufEltMpiType;
 
 // to help in communicating the elements
@@ -66,12 +70,14 @@ struct ShuffleBufSortElement {
   uint64_t val = 0;
   int64_t  dstGlobalIdx = 0;
 };
+/* BEGIN_IGNORE_FOR_LINE_COUNT (printing code) */
 std::ostream& operator<<(std::ostream& os, const ShuffleBufSortElement& x) {
   os << "(";
   printhex(os, x.key);
   os << "," << x.val << "," << x.dstGlobalIdx << ")";
   return os;
 }
+/* END_IGNORE_FOR_LINE_COUNT */
 static MPI_Datatype gShuffleBufSortElementMpiType;
 
 
@@ -160,6 +166,7 @@ DistributedArray<EltType>::create(std::string name, int64_t totalNumElements) {
   return ret;
 }
 
+/* BEGIN_IGNORE_FOR_LINE_COUNT (printing code) */
 static void flushOutput() {
   // this is a workaround to make it more likely that the output is printed
   // to the terminal in the correct order.
@@ -198,6 +205,7 @@ void DistributedArray<EltType>::print(int64_t nToPrintPerRank) const {
     MPI_Barrier(MPI_COMM_WORLD);
   }
 }
+/* END_IGNORE_FOR_LINE_COUNT */
 
 // compute the bucket for a value when sort is on digit 'd'
 inline int getBucket(SortElement x, int d) {
@@ -588,13 +596,17 @@ int main(int argc, char *argv[]) {
   MPI_Init(&argc, &argv);
 
   // read in the problem size
+
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
   bool printSome = false;
   bool verifyLocally = false;
   bool verifyLocallySet = false;
+  /* END_IGNORE_FOR_LINE_COUNT */
   int64_t n = 100*1000*1000;
   for (int i = 1; i < argc; i++) {
     if (std::string(argv[i]) == "--n") {
       n = std::stoll(argv[++i]);
+    /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
     } else if (std::string(argv[i]) == "--print") {
       printSome = true;
     } else if (std::string(argv[i]) == "--verify") {
@@ -603,12 +615,15 @@ int main(int argc, char *argv[]) {
     } else if (std::string(argv[i]) == "--no-verify") {
       verifyLocally = false;
       verifyLocallySet = true;
+    /* END_IGNORE_FOR_LINE_COUNT */
     }
   }
 
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
   if (!verifyLocallySet) {
     verifyLocally = (n < 128*1024*1024);
   }
+  /* END_IGNORE_FOR_LINE_COUNT */
 
   int myRank = 0;
   int numRanks = 0;
@@ -644,7 +659,9 @@ int main(int argc, char *argv[]) {
     auto start = std::chrono::steady_clock::now();
     if (myRank == 0) {
       std::cout << "Generating random values\n";
+      /* BEGIN_IGNORE_FOR_LINE_COUNT (printing) */
       flushOutput();
+      /* END_IGNORE_FOR_LINE_COUNT */
     }
 
     auto rng = pcg64(myRank);
@@ -660,10 +677,14 @@ int main(int argc, char *argv[]) {
     std::chrono::duration<double> elapsed = end - start;
     if (myRank == 0) {
       std::cout << "Generated random values in " << elapsed.count() << " s\n";
+      /* BEGIN_IGNORE_FOR_LINE_COUNT (printing) */
       flushOutput();
+      /* END_IGNORE_FOR_LINE_COUNT */
     }
     MPI_Barrier(MPI_COMM_WORLD);
   }
+
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
 
   // Print out the first few elements on each locale
   if (printSome) {
@@ -677,6 +698,7 @@ int main(int argc, char *argv[]) {
                & LocalInputCopy[0], A.numElementsPerRank(),
                gSortElementMpiType, 0, MPI_COMM_WORLD);
   }
+  /* END_IGNORE_FOR_LINE_COUNT */
 
   // Shuffle the data in-place to sort by the current digit
   {
@@ -701,6 +723,8 @@ int main(int argc, char *argv[]) {
     }
     MPI_Barrier(MPI_COMM_WORLD);
   }
+
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
 
   // Print out the first few elements on each locale
   if (printSome) {
@@ -737,6 +761,7 @@ int main(int argc, char *argv[]) {
       assert(!failures);
     }
   }
+  /* END_IGNORE_FOR_LINE_COUNT */
 
   MPI_Finalize();
   return 0;
