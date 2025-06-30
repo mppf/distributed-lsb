@@ -507,6 +507,8 @@ void globalShuffle(DistributedArray<SortElement>& A,
 
   // fence on B since we wrote to it with MPI_Put
   MPI_Win_fence(0,B.win());
+  // global barrier -- all of the ranks should meet up here
+  MPI_Barrier(MPI_COMM_WORLD);
 }
 
 // Sort the data in A, using B as scratch space.
