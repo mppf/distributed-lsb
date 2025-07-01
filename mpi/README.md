@@ -52,15 +52,15 @@ Output:
 Total number of MPI ranks: 8192
 Problem size: 68719476736
 Generating random values
-Generated random values in 0.238092 s
+Generated random values in 0.222903 s
 Sorting
-Sorted 68719476736 values in 82.4948
-That's 833.016 M elements sorted / s
+Sorted 68719476736 values in 82.076
+That's 837.267 M elements sorted / s
 ```
 
 Other details:
- * loaded modules `PrgEnv-gnu` and `gcc-native/12.3`
- * used `cray-mpich/8.1.28`
+ * loaded modules `PrgEnv-gnu` and `gcc-native/14.2`
+ * used `cray-mpich/8.1.32`
  * used the system default processor selection module `craype-x86-rome`
  * used these additional environment variables
    ```
