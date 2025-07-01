@@ -166,7 +166,7 @@ module ArkoudaRadixSortStandalone
     }//proc radixSortLSDCore
 
     proc main() {
-      writeln("Running on ", numLocales, " locales with ", numTasks, " tasks");
+      writeln(numLocales, " locales with ", numTasks, " tasks per locale");
 
       var A = blockDist.createArray(0..<n, (uint(64), uint(64)));
 
@@ -192,7 +192,7 @@ module ArkoudaRadixSortStandalone
       writeln("That's ", n/t.elapsed()/1000.0/1000.0, " M elements sorted / s");
 
       /* BEGIN_IGNORE_FOR_LINE_COUNT (verification code) */
-      {
+      if verify {
         writeln("Verifying with 1-locale sort");
         var B:[0..<n] (uint(64), uint(64));
         var rs2 = new randomStream(uint, seed=1);
