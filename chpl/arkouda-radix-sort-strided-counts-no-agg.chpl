@@ -30,10 +30,6 @@ module ArkoudaRadixSortStandalone
     use Time;
     use Sort;
 
-    record KeysComparator: keyComparator {
-      inline proc key(k) { return k; }
-    }
-
     record KeysRanksComparator: keyComparator {
       inline proc key(kr) { const (k, _) = kr; return k; }
     }
