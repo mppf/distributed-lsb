@@ -1,11 +1,11 @@
-// from https://www.usna.edu/Users/cs/fknoll/shmem/Lesson0_HelloWorld.html
+// based on https://www.usna.edu/Users/cs/fknoll/shmem/Lesson0_HelloWorld.html
 //
 // compile with
-//   oshcc -O3 hello-shmem.c -o hello-shmem
+//   oshc++ -O3 hello-shmem.cpp -o hello-shmem
 // run with
 //   oshrun -np 4 ./hello-shmem
 
-#include <stdio.h>
+#include <cstdio>
 #include <shmem.h>
 
 int main(){
