@@ -25,7 +25,6 @@ module ArkoudaRadixSortStandalone
     /* END_IGNORE_FOR_LINE_COUNT */
 
     use BlockDist;
-    use CopyAggregation;
     use Random;
     use RangeChunk;
     use Time;
@@ -126,16 +125,14 @@ module ArkoudaRadixSortStandalone
                         var tD = calcBlock(task, lD.low, lD.high);
                         // calc new position and put data there in temp
                         {
-                            var aggregator = new DstAggregator(t);
                             for i in tD {
                                 const ref tempi = temp.localAccess[i];
                                 const key = comparator.key(tempi);
                                 var bucket = getDigit(key, rshift, last, negs); // calc bucket from key
                                 var pos = taskBucketPos[bucket];
                                 taskBucketPos[bucket] += 1;
-                                aggregator.copy(a[pos], tempi);
+                                a[pos] = tempi;
                             }
-                            aggregator.flush();
                         }
                     }//coforall task
                 }//on loc
