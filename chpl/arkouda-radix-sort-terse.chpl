@@ -10,7 +10,7 @@ module ArkoudaRadixSortStandalone
 
     config const numTasks = here.maxTaskPar;
     const Tasks = {0..#numTasks};
-    
+
     use BlockDist;
     use CopyAggregation;
     use Random;
@@ -85,10 +85,10 @@ module ArkoudaRadixSortStandalone
                     }
                 }
             }
-            
+
             var globalStarts = + scan globalCounts;
             globalStarts -= globalCounts;
-            
+
             coforall loc in Locales with (ref a) {
                 on loc {
                     var tasksBucketPos: [Tasks] [0..#numBuckets] int;
@@ -150,7 +150,7 @@ module ArkoudaRadixSortStandalone
 
       t.stop();
 
-      writeln("Sorted ", n, " elements in ", t.elapsed(), " s"); 
+      writeln("Sorted ", n, " elements in ", t.elapsed(), " s");
       writeln("That's ", n/t.elapsed()/1000.0/1000.0, " M elements sorted / s");
     }
 }

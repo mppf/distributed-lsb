@@ -8,7 +8,7 @@ module ArkoudaRadixSortStandalone
 
     /*
     Bit width of digits for the LSD radix sort and related ops
-     */ 
+     */
     config param bitsPerDigit = 16;
     private param numBuckets = 1 << bitsPerDigit;
     private param maskDigit = numBuckets-1;
@@ -19,7 +19,7 @@ module ArkoudaRadixSortStandalone
     config const numTasks = here.maxTaskPar;
     const Tasks = {0..#numTasks};
 
-    
+
     /* BEGIN_IGNORE_FOR_LINE_COUNT (verification code) */
     config const verify = n < 100_000;
     /* END_IGNORE_FOR_LINE_COUNT */
@@ -77,7 +77,6 @@ module ArkoudaRadixSortStandalone
 
         // loop over digits
         for rshift in {0..#nBits by bitsPerDigit} {
-            //writeln("rshift is ", rshift);
             const last = (rshift + bitsPerDigit) >= nBits;
             // count digits
             coforall loc in Locales with (ref globalCounts) {
@@ -89,12 +88,10 @@ module ArkoudaRadixSortStandalone
                         var lD = temp.localSubdomain();
                         // calc task's indices from local domain's indices
                         var tD = calcBlock(task, lD.low, lD.high);
-                        //writeln("Task ", loc.id, " ", task, " input is ", temp[tD]);
                         // count digits in this task's part of the array
                         for i in tD {
                             const key = comparator.key(temp.localAccess[i]);
                             var bucket = getDigit(key, rshift, last, negs); // calc bucket from key
-                            //writeln("Task ", loc.id, " ", task, " key ", key, " is in bucket ", bucket);
                             taskBucketCounts[bucket] += 1;
                         }
                         // copy to the distributed counts array in
@@ -103,18 +100,13 @@ module ArkoudaRadixSortStandalone
                         const stride = calcGlobalIndex(1, loc.id, task) - start;
                         globalCounts[start.. by stride #numBuckets] =
                           taskBucketCounts[0..#numBuckets];
-                        //writeln("loc ", loc.id, " task ", task, " counts ", taskBucketCounts);
                     }//coforall task
                 }//on loc
             }//coforall loc
-            
-            //writeln("globalCounts pre scan ", globalCounts);
 
             // scan globalCounts to get bucket ends on each locale/task
             var globalStarts = + scan globalCounts;
             globalStarts -= globalCounts;
-            
-            //writeln("globalStarts post scan ", globalStarts);
 
             // calc new positions and permute
             coforall loc in Locales with (ref a) {
@@ -127,7 +119,6 @@ module ArkoudaRadixSortStandalone
                         const stride = calcGlobalIndex(1, loc.id, task) - start;
                         taskBucketPos[0..#numBuckets] =
                           globalStarts[start.. by stride #numBuckets];
-                        //writeln("loc ", loc.id, " task ", task, " starts ", taskBucketPos);
 
                         // get local domain's indices
                         var lD = temp.localSubdomain();
@@ -146,7 +137,7 @@ module ArkoudaRadixSortStandalone
                             }
                             aggregator.flush();
                         }
-                    }//coforall task 
+                    }//coforall task
                 }//on loc
             }//coforall loc
 
@@ -181,9 +172,9 @@ module ArkoudaRadixSortStandalone
 
       t.stop();
 
-      writeln("Sorted ", n, " elements in ", t.elapsed(), " s"); 
+      writeln("Sorted ", n, " elements in ", t.elapsed(), " s");
       writeln("That's ", n/t.elapsed()/1000.0/1000.0, " M elements sorted / s");
-  
+
       /* BEGIN_IGNORE_FOR_LINE_COUNT (verification code) */
       if verify {
         writeln("Verifying with 1-locale sort");
