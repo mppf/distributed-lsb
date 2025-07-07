@@ -67,6 +67,8 @@ if __name__ == "__main__":
              "shmem/shmem_lsbsort-terse.cpp",
              "shmem/shmem_lsbsort.cpp",
              "shmem/shmem_lsbsort_convey.cpp",
+             "lamellar/lamellar_lsbsort/src/main.rs",
+             "lamellar/lamellar_lsbsort/src/main_safe.rs",
             ]
 
     for p in paths:
