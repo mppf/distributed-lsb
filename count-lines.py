@@ -13,6 +13,7 @@ def count_lines_ignoring_blank(file_path):
 
     file_contents = ""
     ignoring = 0
+    ignored_lines = 0
     with open(file_path, 'r') as file:
         for line in file:
             found_ignore = False
@@ -24,6 +25,8 @@ def count_lines_ignoring_blank(file_path):
                 found_ignore = True
             if ignoring == 0 and not found_ignore:
                 file_contents += line
+            else:
+                ignored_lines += 1
 
     # find the language based on the file name
     lang = "unknown"
@@ -51,18 +54,21 @@ def count_lines_ignoring_blank(file_path):
             code_lines = code
 
 
-    return code_lines
+    return code_lines, ignored_lines
 
 if __name__ == "__main__":
-    paths = ["test.cpp",
+    paths = [
+             "chpl/arkouda-radix-sort-terse.chpl",
              "chpl/arkouda-radix-sort.chpl",
              "chpl/arkouda-radix-sort-strided-counts.chpl",
-             "chpl/arkouda-radix-sort-terse.chpl",
-             "mpi/mpi_lsbsort.cpp",
+             "chpl/arkouda-radix-sort-strided-counts-no-agg.chpl",
              "mpi/mpi_lsbsort-terse.cpp",
-             "shmem/shmem_lsbsort-terse.cpp"
+             "mpi/mpi_lsbsort.cpp",
+             "shmem/shmem_lsbsort-terse.cpp",
+             "shmem/shmem_lsbsort.cpp",
+             "shmem/shmem_lsbsort_convey.cpp",
             ]
 
     for p in paths:
-        count = count_lines_ignoring_blank(p)
-        print(f"{p:40} {count}")
+        count, ignored_lines = count_lines_ignoring_blank(p)
+        print(f"{p:50} {count} ({ignored_lines} lines ignored)")

@@ -135,8 +135,11 @@ struct DistributedArray {
   inline int myRank() const { return myRank_; }
   inline int numRanks() const { return numRanks_; }
 
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (printing) */
   // helper to print part of the distributed array
   void print(int64_t nToPrintPerRank) const;
+  /* END_IGNORE_FOR_LINE_COUNT */
+
 };
 
 template<typename EltType>
@@ -606,8 +609,9 @@ int main(int argc, char *argv[]) {
   for (int i = 1; i < argc; i++) {
     if (std::string(argv[i]) == "--n") {
       n = std::stoll(argv[++i]);
+    }
     /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
-    } else if (std::string(argv[i]) == "--print") {
+    else if (std::string(argv[i]) == "--print") {
       printSome = true;
     } else if (std::string(argv[i]) == "--verify") {
       verifyLocally = true;
@@ -633,7 +637,9 @@ int main(int argc, char *argv[]) {
   if (myRank == 0) {
     std::cout << "Total number of MPI ranks: " << numRanks << "\n";
     std::cout << "Problem size: " << n << "\n";
+    /* BEGIN_IGNORE_FOR_LINE_COUNT (printing) */
     flushOutput();
+    /* END_IGNORE_FOR_LINE_COUNT */
   }
 
   // setup the global types
@@ -704,7 +710,9 @@ int main(int argc, char *argv[]) {
   {
     if (myRank == 0) {
       std::cout << "Sorting\n";
+      /* BEGIN_IGNORE_FOR_LINE_COUNT (printing) */
       flushOutput();
+      /* END_IGNORE_FOR_LINE_COUNT */
     }
 
     MPI_Barrier(MPI_COMM_WORLD);

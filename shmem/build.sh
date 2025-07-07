@@ -63,9 +63,9 @@ then
   fi
   make
   popd
-
-  export PKG_CONFIG_PATH=$PWD/bale/src/bale_classic/build_cray/lib/pkgconfig:$PKG_CONFIG_PATH
 fi
+
+export PKG_CONFIG_PATH=$PWD/bale/src/bale_classic/build_cray/lib/pkgconfig:$PKG_CONFIG_PATH
 
 for name in `basename --suffix=.cpp *.cpp`
 do
