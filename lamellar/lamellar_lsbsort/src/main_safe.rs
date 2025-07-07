@@ -235,6 +235,8 @@ fn main() {
                  (n as f64 / 1000000.0) / time_sort);
     }
 
+    /* BEGIN_IGNORE_FOR_LINE_COUNT (verification code) */
+
     //roughly check that the data is sorted
     A.local_chunks(n_per_task)
         .for_each(move |task_slice| {
@@ -251,4 +253,6 @@ fn main() {
             }
         })
         .block();
+
+    /* END_IGNORE_FOR_LINE_COUNT */
 }

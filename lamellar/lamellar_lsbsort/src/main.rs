@@ -10,7 +10,7 @@ use lamellar::array::Distribution;
 mod prefix_sum_impl;
 use prefix_sum_impl::exclusive_prefix_sum;
 
-const RADIX: u64 = 16; // TODO set to 16
+const RADIX: u64 = 16;
 const N_DIGITS: u64 = 64 / RADIX;
 const N_BUCKETS: u64 = 1 << RADIX;
 const COUNTS_SIZE: usize = N_BUCKETS as usize;
@@ -374,6 +374,8 @@ fn main() {
                  (n as f64 / 1000000.0) / time_sort);
     }
 
+    /* BEGIN_IGNORE_FOR_LINE_COUNT (verification code) */
+
     // roughly check that the data is sorted
     unsafe {
         A.local_chunks(n_per_task)
@@ -391,4 +393,6 @@ fn main() {
             })
             .block()
     }
+
+    /* END_IGNORE_FOR_LINE_COUNT */
 }
