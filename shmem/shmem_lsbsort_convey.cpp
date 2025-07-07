@@ -41,6 +41,7 @@ struct IdxValue {
   int64_t value;
 };
 
+/* BEGIN_IGNORE_FOR_LINE_COUNT (printing code) */
 std::ostream& printhex(std::ostream& os, uint64_t key) {
   std::ios oldState(nullptr);
   oldState.copyfmt(os);
@@ -54,6 +55,8 @@ std::ostream& operator<<(std::ostream& os, const SortElement& x) {
   os << "," << x.val << ")";
   return os;
 }
+/* END_IGNORE_FOR_LINE_COUNT */
+
 bool operator==(const SortElement& x, const SortElement& y) {
   return x.key == y.key && x.val == y.val;
 }
@@ -121,9 +124,11 @@ struct DistributedArray {
   inline int myRank() const { return myRank_; }
   inline int numRanks() const { return numRanks_; }
 
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
   // helper to print part of the distributed array
   void print(int64_t nToPrintPerRank) const;
   bool checkSorted() const;
+  /* END_IGNORE_FOR_LINE_COUNT */
 };
 
 template<typename EltType>
@@ -153,6 +158,7 @@ DistributedArray<EltType>::create(std::string name, int64_t totalNumElements) {
   return ret;
 }
 
+/* BEGIN_IGNORE_FOR_LINE_COUNT (printing code) */
 static void flushOutput() {
   // this is a workaround to make it more likely that the output is printed
   // to the terminal in the correct order.
@@ -191,7 +197,9 @@ void DistributedArray<EltType>::print(int64_t nToPrintPerRank) const {
     shmem_barrier_all();
   }
 }
+/* END_IGNORE_FOR_LINE_COUNT */
 
+/* BEGIN_IGNORE_FOR_LINE_COUNT (verification code) */
 template<typename EltType>
 bool DistributedArray<EltType>::checkSorted() const {
     int myRank = 0;
@@ -232,6 +240,7 @@ bool DistributedArray<EltType>::checkSorted() const {
 
     return *locallySorted && boundariesSorted;
 }
+/* END_IGNORE_FOR_LINE_COUNT */
 
 // compute the bucket for a value when sort is on digit 'd'
 inline int getBucket(SortElement x, int d) {
@@ -509,19 +518,27 @@ int main(int argc, char *argv[]) {
   shmem_init();
 
   // read in the problem size
+
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
   bool printSome = false;
   bool verify = true;
+  /* END_IGNORE_FOR_LINE_COUNT */
+
   int64_t n = 100*1000*1000;
   for (int i = 1; i < argc; i++) {
     if (std::string(argv[i]) == "--n") {
       n = std::stoll(argv[++i]);
-    } else if (std::string(argv[i]) == "--print") {
+    }
+
+    /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
+    else if (std::string(argv[i]) == "--print") {
       printSome = true;
     } else if (std::string(argv[i]) == "--verify") {
       verify = true;
     } else if (std::string(argv[i]) == "--no-verify") {
       verify = false;
     }
+    /* END_IGNORE_FOR_LINE_COUNT */
   }
 
   int myRank = 0;
@@ -544,7 +561,9 @@ int main(int argc, char *argv[]) {
     auto start = std::chrono::steady_clock::now();
     if (myRank == 0) {
       std::cout << "Generating random values\n";
+      /* BEGIN_IGNORE_FOR_LINE_COUNT (printing) */
       flushOutput();
+      /* END_IGNORE_FOR_LINE_COUNT */
     }
 
     auto rng = pcg64(myRank);
@@ -560,21 +579,30 @@ int main(int argc, char *argv[]) {
     std::chrono::duration<double> elapsed = end - start;
     if (myRank == 0) {
       std::cout << "Generated random values in " << elapsed.count() << " s\n";
+      /* BEGIN_IGNORE_FOR_LINE_COUNT (printing) */
       flushOutput();
+      /* END_IGNORE_FOR_LINE_COUNT */
     }
     shmem_barrier_all();
   }
+
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (printing) */
 
   // Print out the first few elements on each locale
   if (printSome) {
     A.print(10);
   }
 
+  /* END_IGNORE_FOR_LINE_COUNT */
+
+
   // Shuffle the data in-place to sort by the current digit
   {
     if (myRank == 0) {
       std::cout << "Sorting\n";
+      /* BEGIN_IGNORE_FOR_LINE_COUNT (printing) */
       flushOutput();
+      /* END_IGNORE_FOR_LINE_COUNT */
     }
 
     shmem_barrier_all();
@@ -594,6 +622,8 @@ int main(int argc, char *argv[]) {
     shmem_barrier_all();
   }
 
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (printing and verification code) */
+
   // Print out the first few elements on each locale
   if (printSome) {
     A.print(10);
@@ -610,6 +640,8 @@ int main(int argc, char *argv[]) {
       }
     }
   }
+
+  /* END_IGNORE_FOR_LINE_COUNT */
 
   // this seems to cause crashes/hangs with openmpi shmem / osss-ucx
   //shmem_finalize();
