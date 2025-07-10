@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <cassert>
+#include <climits>
 #include <cstdint>
 
 #include <unistd.h>
@@ -641,6 +642,18 @@ int main(int argc, char *argv[]) {
     flushOutput();
     /* END_IGNORE_FOR_LINE_COUNT */
   }
+
+  /* BEGIN_IGNORE_FOR_LINE_COUNT (error checking) */
+  if ((n+numRanks-1) / numRanks > (int64_t) INT_MAX) {
+    if (myRank == 0) {
+      std::cout << "Too much data per rank (" << n/numRanks
+                << ") in this configuration\n";
+      std::cout << "int counts and offsets in MPI_AllToAllv could overflow\n";
+    }
+    MPI_Finalize();
+    return 0;
+  }
+  /* END_IGNORE_FOR_LINE_COUNT */
 
   // setup the global types
   assert(sizeof(unsigned long long) == sizeof(uint64_t));
