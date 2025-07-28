@@ -3,7 +3,21 @@
 `lamellar_lsbsort` is a Rust and Lamellar implementation of LSD Radix
 Sort.
 
-*This version is still under development*
+* `lamellar_lsbsort/src/main.rs` is a version of LSD Radix Sort using
+  UnsafeArray
+
+* `lamellar_lsbsort/src/main_safe.rs` is a version of LSD Radix Sort
+  using ReadOnlyArray and AtomicArray
+
+Additionally,
+
+* `lamellar_lsbsort/src/am_safe.rs` is an interesting comparison point
+  using a different algorithm
+
+* `lamellar_lsbsort/src/prefix_sum_impl.rs` contains the code for a
+  distributed parallel prefix sum, which we did not include in line
+  counts because we expect it to be added to the Lamellar runtime.
+
 
 [Lamellar](https://github.com/pnnl/lamellar-runtime) is a Rust library
 that supports High Performance Computing with a focus on PGAS approaches.

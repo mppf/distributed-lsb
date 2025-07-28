@@ -6,18 +6,21 @@ distributed-memory parallel programming frameworks. These implementations
 support comparisons of these different frameworks and their productivity
 and performance.
 
-As of Feb 2025, here are the performance results. These performance
+As of July 2025, here are the performance results. These performance
 results are in units of millions of 16-byte elements sorted per second on
-64 nodes of a HPE Cray Supercomputing EX using 128 cores per node. The
-program size reported here is for the terse version of each
-implementation.
+when sorting 2³⁷ elements on 128 nodes of a HPE Cray Supercomputing EX
+using 128 cores per node. The program size reported here is a count of
+source lines of code produced by ``count-lines.py``, which processes
+special comments to leave out verification and debugging code.
 
-| Variant     | Performance           | Source Lines of Code |
-| ---         | ---                   | ---                  |
-|             | in million elements sorted / s |             |
-| chapel      | 6524                  | 138                  |
-| mpi         | 830                   | 412                  |
-| shmem       | 1883                  | 295                  |
+| Variant              | EX Performance           | Source Lines of Code |
+| ---                  | ---                   | ---                  |
+|                      | in million elements sorted / s |             |
+| Chapel, fine-grained | 10,455                | 110                  |
+| Chapel, aggregated   | 16,782                | 113                  |
+| MPI                  | 7,823                 | 410                  |
+| OpenSHMEM, fine-grained  | 3,786             | 291                  |
+| Conveyors (over OpenSHMEM)  | 14,687         | 330                  |
 
 PRs contributing improved versions or implementations in other
 distributed-memory parallel programming frameworks are welcome!
@@ -146,6 +149,19 @@ step, it stably sorts the local data by the digit. It uses the strided
 `iput` and `iget` functions to copy counts data between global counts
 arrays and local counts arrays. It uses `shmem_putmem` copy the array
 elements.
+
+### Conveyors
+
+[Conveyors](https://github.com/jdevinney/bale/blob/master/docs/uconvey.pdf)
+is a library that supports aggregation for many-to-many communication of
+small data items. Users of Conveyors need to write loops that enqueue
+messages for other nodes and handle messages sent to the current node.
+Conveyors can be configured to use OpenSHMEM or MPI.  The Conveyors
+implementation of LSD Sort is an optimiza- tion on the OpenSHMEM version,
+retaining its structure while integrating conveyors into the
+communication-intensive shuffle loop. Thus, it uses Conveyors instead of
+`shem_putmem`.
+
 
 # Get Involved
 

@@ -2,6 +2,17 @@
 
 `mpi_lsbsort.cpp` is a C++ and MPI implementation of LSD Radix Sort.
 
+`mpi_lsbsort_onesided.cpp` is an attempt to use MPI one-sided calls to
+improve the radix sort performance (although we did not observe it to
+perform better than the original).
+
+Additionally, `comparison-kadis-ams.cpp` is a similar program that uses
+the [KaDiS AMS distributed
+sort](https://github.com/MichaelAxtmann/KaDiS/). It is not a radix sort,
+so it is not directly comparable.
+
+`comparison-kadis-ams.cpp
+
 # Building
 
 First, it is necessary to get a copy of the PCG random number generator,
@@ -30,32 +41,32 @@ mpirun -n 4 ./mpi_lsbsort --n 100
 # Details of Measured Version
 
 
-Performance was measured on an HPE Cray Supercomputing EX using 64 nodes
-(each using 128 cores) and a problem size of 68719476736 elements total
+Performance was measured on an HPE Cray Supercomputing EX using 128 nodes
+(each using 128 cores) and a problem size of 137438953472 elements total
 (so the elements require 16 GiB of space per node).
 
 Compile command:
 
 ```
-CC -O3 mpi_lsbsort.cpp -o mpi_lsbsort -I pcg-cpp/include/
+CC -DNDEBUG -O3 mpi_lsbsort.cpp -o mpi_lsbsort -I pcg-cpp/include/
 ```
 
 Run command:
 
 ```
-srun --nodes 64 --ntasks-per-node=128 ./mpi_lsbsort --n 68719476736
+srun --exclusive --nodes 128 --ntasks-per-node=16 --cpus-per-task=8 --cpu-bind=ldoms ./mpi_lsbsort --n 137438953472
 ```
 
-Output:
+Example Output:
 
 ```
-Total number of MPI ranks: 8192
-Problem size: 68719476736
+Total number of MPI ranks: 2048
+Problem size: 137438953472
 Generating random values
-Generated random values in 0.222903 s
+Generated random values in 0.208902 s
 Sorting
-Sorted 68719476736 values in 82.076
-That's 837.267 M elements sorted / s
+Sorted 137438953472 values in 17.0758
+That's 8048.74 M elements sorted / s
 ```
 
 Other details:
