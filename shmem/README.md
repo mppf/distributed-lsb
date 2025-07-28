@@ -1,8 +1,19 @@
 # OpenSHMEM Implementation of LSD Radix Sort
 
 `shmem_lsbsort.cpp` is a C++ and OpenSHMEM implementation of LSD Radix
-Sort.  An open-source implementation of OpenSHMEM is available at
-[osss-ucx](https://github.com/openshmem-org/osss-ucx).
+Sort. `shmem_lsbsort_convey.cpp` builds upon that version by using
+[Conveyors](https://github.com/jdevinney/bale/blob/master/docs/uconvey.pdf)
+instead of `put_shmem` to move elements.
+
+Open-source implementations of OpenSHMEM are available:
+
+ * [osss-ucx](https://github.com/openshmem-org/osss-ucx)
+ * [Sandia OpenSHMEM](https://github.com/Sandia-OpenSHMEM/SOS)
+ * [OpenMPI](https://www.open-mpi.org/) (when configured to include
+   OpenSHMEM)
+
+Additionally, [Cray OpenSHMEMX](https://cray-openshmemx.readthedocs.io)
+is available on Cray EX systems.
 
 # Building
 
@@ -20,6 +31,8 @@ system):
 oshc++ -O3 shmem_lsbsort.cpp -o shmem_lsbsort -I pcg-cpp/include/
 ```
 
+Building the Conveyors version involves downloading and buildig
+Conveyors. There are some commands to do so in `build.sh`.
 
 # Running
 
@@ -33,24 +46,27 @@ oshrun -np 3 ./shmem_lsbsort --n 100
 
 # Details of Measured Version
 
-
-Performance was measured on an HPE Cray Supercomputing EX using 64 nodes
-(each using 128 cores) and a problem size of 68719476736 elements total
+Performance was measured on an HPE Cray Supercomputing EX using 128 nodes
+(each using 128 cores) and a problem size of 137438953472 elements total
 (so the elements require 16 GiB of space per node).
 
-Compile command:
+Compile commands:
 
 ```
 CC -O3 -DNDEBUG shmem_lsbsort.cpp -o shmem_lsbsort -I pcg-cpp/include/
+
+CC -O3 -DNDEBUG shmem_lsbsort_convey.cpp -o shmem_lsbsort_convey -I pcg-cpp/include/ $(pkg-config --cflags --libs convey)
 ```
 
-Run command:
+Run commands:
 
 ```
-srun --nodes 64 --ntasks-per-node=128 --hint=nomultithread ./shmem_lsbsort --n 68719476736
+srun --hint=nomultithread --nodes 128 --ntasks-per-node=128 ./shmem_lsbsort --n 137438953472
+
+srun --hint=nomultithread --nodes 128 --ntasks-per-node=128 ./shmem_lsbsort_convey --n 137438953472
 ```
 
-Output:
+Example Output:
 
 ```
 Total number of shmem PEs: 8192
