@@ -69,6 +69,6 @@ export PKG_CONFIG_PATH=$PWD/bale/src/bale_classic/build_cray/lib/pkgconfig:$PKG_
 
 for name in `basename --suffix=.cpp *.cpp`
 do
-echo $CXX -O3 $name.cpp -o $name -I pcg-cpp/include/ $(pkg-config --cflags --libs convey)
-$CXX -O3 $name.cpp -o $name -I pcg-cpp/include/ $(pkg-config --cflags --libs convey)
+echo $CXX -DNDEBUG -O3 $name.cpp -o $name -I pcg-cpp/include/ $(pkg-config --cflags --libs convey)
+$CXX -DNDEBUG -O3 $name.cpp -o $name -I pcg-cpp/include/ $(pkg-config --cflags --libs convey)
 done
